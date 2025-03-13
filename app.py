@@ -7,6 +7,7 @@ import json
 import logging
 from flask_caching import Cache  # pip3 install flask-caching
 import re
+import tempfile
 
 app = Flask(__name__)
 
@@ -52,14 +53,13 @@ def init_db():
 # استدعاء init_db عند بدء التطبيق
 init_db()
 
-def update_config_xml(app_name, package_name):
-    config_path = os.path.join(SHARED_PROJECT_PATH, 'config.xml')
+def update_config_xml(app_name, package_name, project_path=SHARED_PROJECT_PATH):
+    config_path = os.path.join(project_path, 'config.xml')
     if not os.path.exists(config_path):
         logging.error(f"ملف config.xml غير موجود في {config_path}")
         raise FileNotFoundError(f"ملف config.xml غير موجود في {config_path}")
 
     try:
-        # نص XML خام بدون <splash> ومع التحقق من الأيقونة
         config_content = f'''<?xml version='1.0' encoding='utf-8'?>
 <widget id="{package_name}" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>{app_name}</name>
@@ -72,25 +72,20 @@ def update_config_xml(app_name, package_name):
     <allow-intent href="https://*/*" />
     <platform name="android">
 '''
-        # إضافة الأيقونة فقط إذا كانت موجودة
-        icon_path = os.path.join(SHARED_PROJECT_PATH, 'resources', 'android', 'icon.png')
+        icon_path = os.path.join(project_path, 'resources', 'android', 'icon.png')
         if os.path.exists(icon_path):
             config_content += '        <icon src="resources/android/icon.png" />\n'
-        # استبدال <splash> بـ <preference>
         config_content += '''        <preference name="AndroidWindowSplashScreenAnimatedIcon" value="resources/android/splash.png" />
-        <preference name="AndroidWindowSplashScreenBackground" value="#ffffff" />
-    </platform>
+    <preference name="AndroidWindowSplashScreenBackground" value="#ffffff" />
+</platform>
 </widget>'''
 
-        # كتابة الملف مباشرة
         with open(config_path, 'w', encoding='utf-8') as f:
             f.write(config_content)
         logging.info(f"تم تعديل config.xml بنجاح: id={package_name}, name={app_name}")
     except Exception as e:
         logging.error(f"خطأ أثناء تعديل config.xml: {str(e)}")
         raise
-
-
 @app.route('/')
 def serve_input():
     return send_from_directory('static', 'input.html')
@@ -129,6 +124,7 @@ def save_app_data():
         logging.error(f"خطأ أثناء حفظ البيانات: {str(e)}")
         return jsonify({'status': 'error', 'message': f'حدث خطأ: {str(e)}'}), 500
 
+
 @app.route('/build_app/<int:app_id>', methods=['GET'])
 def build_app(app_id):
     try:
@@ -147,73 +143,79 @@ def build_app(app_id):
 
         app_name, package_name, icon, activity_type, elements = app_data[1], app_data[2], app_data[3], app_data[4], json.loads(app_data[5])
         
-        # تعديل config.xml
-        update_config_xml(app_name, package_name)
-        
-        # تغيير المسار إلى مجلد المشروع
-        os.chdir(SHARED_PROJECT_PATH)
-        
-        # إزالة منصة Android مع التقاط المخرجات
-        remove_process = subprocess.run(['cordova', 'platform', 'remove', 'android'], 
-                                        capture_output=True, text=True, check=False)  # check=False عشان نكمل حتى لو فشل
-        logging.info(f"مخرجات إزالة المنصة: {remove_process.stdout}")
-        if remove_process.stderr:
-            logging.error(f"أخطاء إزالة المنصة: {remove_process.stderr}")
-        
-        # التحقق من إزالة المنصة
-        platform_check = subprocess.run(['cordova', 'platform', 'ls'], 
-                                        capture_output=True, text=True, check=True)
-        logging.info(f"المنصات الموجودة بعد الإزالة: {platform_check.stdout}")
-        
-        # إعادة إضافة منصة Android مع التقاط المخرجات
-        add_process = subprocess.run(['cordova', 'platform', 'add', 'android'], 
-                                     capture_output=True, text=True, check=True)
-        logging.info(f"مخرجات إضافة المنصة: {add_process.stdout}")
-        if add_process.stderr:
-            logging.error(f"أخطاء إضافة المنصة: {add_process.stderr}")
-        
-        # تعديل ملف index.html
-        index_path = os.path.join(SHARED_PROJECT_PATH, 'www', 'index.html')
-        with open(index_path, 'w') as f:
-            f.write('<!DOCTYPE html>\n<html>\n<head>\n<meta charset="UTF-8">\n<title>{}</title>\n'.format(app_name))
-            f.write('<style>\n')
-            f.write('html, body { height: 100%; margin: 0; padding: 0; }\n')
-            f.write('iframe { width: 100%; height: 100%; border: none; }\n')
-            f.write('\n</style>\n</head>\n<body>\n')
-            for element in elements:
-                if element == 'text':
-                    f.write('<p>نص تجريبي</p>\n')
-                elif isinstance(element, dict) and element['type'] == 'webview':
-                    if element['webviewType'] == 'url':
-                        f.write(f'<iframe src="{element["content"]}"></iframe>\n')
-                    elif element['webviewType'] == 'html':
-                        f.write(element['content'] + '\n')
-            f.write('</body>\n</html>')
+        # إنشاء مجلد مؤقت لكل عملية بناء
+        with tempfile.TemporaryDirectory(dir=os.path.dirname(__file__)) as temp_dir:
+            temp_project_path = os.path.join(temp_dir, 'TempApp')
+            shutil.copytree(SHARED_PROJECT_PATH, temp_project_path, dirs_exist_ok=True)
+            
+            # تعديل config.xml في المجلد المؤقت
+            update_config_xml(app_name, package_name, temp_project_path)
+            
+            # تغيير المسار إلى المجلد المؤقت
+            os.chdir(temp_project_path)
+            
+            # التحقق من حالة المنصة قبل الإزالة والإضافة
+            platform_check = subprocess.run(['cordova', 'platform', 'ls'], 
+                                            capture_output=True, text=True, check=True)
+            logging.info(f"المنصات الموجودة قبل الإزالة: {platform_check.stdout}")
+            
+            # إزالة المنصة لو موجودة
+            if 'android' in platform_check.stdout:
+                remove_process = subprocess.run(['cordova', 'platform', 'remove', 'android'], 
+                                                capture_output=True, text=True, check=True)
+                logging.info(f"مخرجات إزالة المنصة: {remove_process.stdout}")
+                if remove_process.stderr:
+                    logging.error(f"أخطاء إزالة المنصة: {remove_process.stderr}")
+            
+            # إضافة المنصة
+            add_process = subprocess.run(['cordova', 'platform', 'add', 'android'], 
+                                         capture_output=True, text=True, check=True)
+            logging.info(f"مخرجات إضافة المنصة: {add_process.stdout}")
+            if add_process.stderr:
+                logging.error(f"أخطاء إضافة المنصة: {add_process.stderr}")
+            
+            # تعديل index.html
+            index_path = os.path.join(temp_project_path, 'www', 'index.html')
+            with open(index_path, 'w') as f:
+                f.write('<!DOCTYPE html>\n<html>\n<head>\n<meta charset="UTF-8">\n<title>{}</title>\n'.format(app_name))
+                f.write('<style>\nhtml, body { height: 100%; margin: 0; padding: 0; }\niframe { width: 100%; height: 100%; border: none; }\n</style>\n</head>\n<body>\n')
+                for element in elements:
+                    if element == 'text':
+                        f.write('<p>نص تجريبي</p>\n')
+                    elif isinstance(element, dict) and element['type'] == 'webview':
+                        if element['webviewType'] == 'url':
+                            f.write(f'<iframe src="{element["content"]}"></iframe>\n')
+                        elif element['webviewType'] == 'html':
+                            f.write(element['content'] + '\n')
+                f.write('</body>\n</html>')
 
-        # نسخ الأيقونة
-        icon_source_path = os.path.join(ICON_PATH, f"{icon}.png")
-        icon_dest_path = os.path.join(SHARED_PROJECT_PATH, 'resources', 'android', 'icon.png')
-        if os.path.exists(icon_source_path):
-            os.makedirs(os.path.dirname(icon_dest_path), exist_ok=True)
-            shutil.copy(icon_source_path, icon_dest_path)
-            logging.info(f"تم نسخ الأيقونة {icon_source_path} إلى {icon_dest_path}")
-        else:
-            logging.warning(f"الأيقونة {icon_source_path} غير موجودة، سيتم استخدام الأيقونة الافتراضية")
+            # نسخ الأيقونة
+            icon_source_path = os.path.join(ICON_PATH, f"{icon}.png")
+            icon_dest_path = os.path.join(temp_project_path, 'resources', 'android', 'icon.png')
+            if os.path.exists(icon_source_path):
+                os.makedirs(os.path.dirname(icon_dest_path), exist_ok=True)
+                shutil.copy(icon_source_path, icon_dest_path)
+                logging.info(f"تم نسخ الأيقونة {icon_source_path} إلى {icon_dest_path}")
+            else:
+                logging.warning(f"الأيقونة {icon_source_path} غير موجودة، سيتم استخدام الأيقونة الافتراضية")
 
-        # بناء التطبيق مع التقاط المخرجات
-        build_process = subprocess.run(['cordova', 'build', 'android'], 
-                                       capture_output=True, text=True, check=True)
-        logging.info(f"مخرجات بناء التطبيق: {build_process.stdout}")
-        if build_process.stderr:
-            logging.error(f"أخطاء بناء التطبيق: {build_process.stderr}")
+            # التحقق من أن المجلد جاهز كمشروع Cordova
+            platform_check = subprocess.run(['cordova', 'platform', 'ls'], 
+                                            capture_output=True, text=True, check=True)
+            logging.info(f"المنصات الموجودة قبل البناء: {platform_check.stdout}")
+            if 'android' not in platform_check.stdout:
+                raise Exception("منصة Android لم تُضف بنجاح قبل البناء")
 
-        # نقل ملف APK
-        built_apk_path = os.path.join(SHARED_PROJECT_PATH, 'platforms', 'android', 'app', 'build', 'outputs', 'apk', 'debug', 'app-debug.apk')
-        shutil.copy(built_apk_path, apk_path)
+            # بناء التطبيق
+            build_process = subprocess.run(['cordova', 'build', 'android'], 
+                                           capture_output=True, text=True, check=True)
+            logging.info(f"مخرجات بناء التطبيق: {build_process.stdout}")
+            if build_process.stderr:
+                logging.error(f"أخطاء بناء التطبيق: {build_process.stderr}")
 
-        # تنظيف الملفات المؤقتة
-        temp_build_path = os.path.join(SHARED_PROJECT_PATH, 'platforms', 'android', 'app', 'build')
-        shutil.rmtree(temp_build_path, ignore_errors=True)
+            # نقل ملف APK
+            built_apk_path = os.path.join(temp_project_path, 'platforms', 'android', 'app', 'build', 'outputs', 'apk', 'debug', 'app-debug.apk')
+            shutil.copy(built_apk_path, apk_path)
 
         logging.info(f"تم بناء التطبيق بنجاح - ID: {app_id}")
         return send_file(apk_path, as_attachment=True, download_name=f'{app_name}.apk')
@@ -233,4 +235,4 @@ def serve_apk(filename):
         return jsonify({'status': 'error', 'message': 'الملف غير موجود'}), 404
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True) # gunicorn -w 4 --preload -b 0.0.0.0:5000 --timeout 300 app:app

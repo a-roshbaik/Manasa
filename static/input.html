@@ -32,13 +32,13 @@
             font-weight: bold;
             color: #555;
         }
-        .form-control, .form-select {
+        .form-control {
             border-radius: 8px;
             padding: 10px;
             margin-bottom: 15px;
             transition: border-color 0.3s ease;
         }
-        .form-control:focus, .form-select:focus {
+        .form-control:focus {
             border-color: #007bff;
             box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
         }
@@ -61,6 +61,25 @@
             margin-top: -10px;
             margin-bottom: 15px;
         }
+        .icon-selection {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+        .icon-selection img {
+            width: 60px;
+            height: 60px;
+            cursor: pointer;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+            border: 2px solid transparent;
+        }
+        .icon-selection img:hover {
+            transform: scale(1.1);
+        }
+        .icon-selection img.selected {
+            border-color: #007bff;
+            transform: scale(1.1);
+        }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
 </head>
@@ -79,17 +98,31 @@
                 <div id="packageNameError" class="error-message">يرجى إدخال اسم حزمة صالح (مثال: com.example.app)</div>
             </div>
             <div class="mb-3">
-                <label for="icon" class="form-label">اختر أيقونة:</label>
-                <select class="form-select" id="icon" name="icon">
-                    <option value="icon1">أيقونة 1 - تصميم حديث</option>
-                    <option value="icon2">أيقونة 2 - تصميم كلاسيكي</option>
-                    <option value="icon3">أيقونة 3 - تصميم بسيط</option>
-                </select>
+                <label class="form-label">اختر أيقونة:</label>
+                <div class="icon-selection">
+                    <img src="/static/icons/icon1.png" alt="أيقونة 1" data-value="icon1">
+                    <img src="/static/icons/icon2.png" alt="أيقونة 2" data-value="icon2">
+                    <img src="/static/icons/icon3.png" alt="أيقونة 3" data-value="icon3">
+                </div>
+                <input type="hidden" id="icon" name="icon">
             </div>
             <button type="button" class="btn btn-primary" onclick="saveDataAndNext()">التالي</button>
         </form>
     </div>
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const iconImages = document.querySelectorAll('.icon-selection img');
+            const iconInput = document.getElementById('icon');
+
+            iconImages.forEach(img => {
+                img.addEventListener('click', function() {
+                    iconImages.forEach(i => i.classList.remove('selected'));
+                    this.classList.add('selected');
+                    iconInput.value = this.getAttribute('data-value');
+                });
+            });
+        });
+
         function validateInput() {
             const appName = document.getElementById('appName').value.trim();
             const packageName = document.getElementById('packageName').value.trim();
@@ -97,7 +130,6 @@
             const packageNameError = document.getElementById('packageNameError');
             let isValid = true;
 
-            // التحقق من اسم التطبيق
             if (!appName) {
                 appNameError.style.display = 'block';
                 isValid = false;
@@ -105,7 +137,6 @@
                 appNameError.style.display = 'none';
             }
 
-            // التحقق من اسم الحزمة باستخدام تعبير منتظم
             const packageNameRegex = /^[a-zA-Z0-9][a-zA-Z0-9\.]*[a-zA-Z0-9]$/;
             if (!packageName || !packageNameRegex.test(packageName) || packageName.split('.').length < 2) {
                 packageNameError.style.display = 'block';
@@ -119,9 +150,14 @@
 
         function saveDataAndNext() {
             if (validateInput()) {
+                const selectedIcon = document.getElementById('icon').value;
+                if (!selectedIcon) {
+                    alert('يرجى اختيار أيقونة!');
+                    return;
+                }
                 localStorage.setItem('appName', document.getElementById('appName').value.trim());
                 localStorage.setItem('packageName', document.getElementById('packageName').value.trim());
-                localStorage.setItem('icon', document.getElementById('icon').value);
+                localStorage.setItem('icon', selectedIcon);
                 window.location.href = '/static/activity.html';
             }
         }
