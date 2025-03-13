@@ -1,0 +1,263 @@
+2025-03-13 01:37:35,008 - INFO - تم إنشاء أو التحقق من جدول apps بنجاح في apps.db
+2025-03-13 01:37:35,022 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.0.1.53:5000
+2025-03-13 01:37:35,022 - INFO - [33mPress CTRL+C to quit[0m
+2025-03-13 01:37:35,023 - INFO -  * Restarting with stat
+2025-03-13 01:37:35,216 - INFO - تم إنشاء أو التحقق من جدول apps بنجاح في apps.db
+2025-03-13 01:37:35,226 - WARNING -  * Debugger is active!
+2025-03-13 01:37:35,226 - INFO -  * Debugger PIN: 119-492-508
+2025-03-13 01:37:42,848 - INFO - 127.0.0.1 - - [13/Mar/2025 01:37:42] "GET / HTTP/1.1" 200 -
+2025-03-13 01:37:57,265 - INFO - 127.0.0.1 - - [13/Mar/2025 01:37:57] "[36mGET /static/activity.html HTTP/1.1[0m" 304 -
+2025-03-13 01:37:59,540 - INFO - 127.0.0.1 - - [13/Mar/2025 01:37:59] "[36mGET /static/design.html HTTP/1.1[0m" 304 -
+2025-03-13 01:38:07,343 - INFO - تم حفظ بيانات التطبيق بنجاح - ID: 17
+2025-03-13 01:38:07,344 - INFO - 127.0.0.1 - - [13/Mar/2025 01:38:07] "POST /save_app_data HTTP/1.1" 200 -
+2025-03-13 01:38:09,850 - INFO - تم تعديل config.xml بنجاح: id=com.ddd.ffff, name=fsdfdsfds
+2025-03-13 01:38:11,567 - INFO - مخرجات إزالة المنصة: 
+2025-03-13 01:38:12,704 - INFO - المنصات الموجودة بعد الإزالة: Installed platforms:
+  
+Available platforms:
+  android
+  browser
+  electron
+
+2025-03-13 01:38:19,566 - INFO - مخرجات إضافة المنصة: Using cordova-fetch for cordova-android
+Adding android project...
+Creating Cordova project for the Android platform:
+	Path: platforms/android
+	Package: com.ddd.ffff
+	Name: fsdfdsfds
+	Activity: MainActivity
+	Android Target SDK: android-34
+	Android Compile SDK: 34
+Subproject Path: CordovaLib
+Subproject Path: app
+Android project created with cordova-android@13.0.0
+
+2025-03-13 01:38:19,566 - INFO - تم نسخ الأيقونة /workspaces/Manasa/icons/icon1.png إلى /workspaces/Manasa/MyApp/resources/android/icon.png
+2025-03-13 01:38:36,624 - INFO - مخرجات بناء التطبيق: Checking Java JDK and Android SDK versions
+ANDROID_HOME=/workspaces/Manasa/AndroidSdk (recommended setting)
+ANDROID_SDK_ROOT=undefined (DEPRECATED)
+Using Android SDK: /workspaces/Manasa/AndroidSdk
+> Task :wrapper
+
+BUILD SUCCESSFUL in 3s
+1 actionable task: 1 executed
+Subproject Path: CordovaLib
+Subproject Path: app
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :app:generateDebugBuildConfig
+> Task :CordovaLib:preBuild UP-TO-DATE
+> Task :CordovaLib:preDebugBuild UP-TO-DATE
+> Task :app:javaPreCompileDebug
+> Task :app:generateDebugResValues
+> Task :CordovaLib:generateDebugResValues
+> Task :CordovaLib:generateDebugResources
+> Task :CordovaLib:writeDebugAarMetadata
+> Task :CordovaLib:packageDebugResources
+> Task :app:checkDebugAarMetadata
+> Task :app:mapDebugSourceSetPaths
+> Task :app:generateDebugResources
+> Task :app:packageDebugResources
+> Task :app:parseDebugLocalResources
+> Task :app:createDebugCompatibleScreenManifests
+> Task :app:extractDeepLinksDebug
+> Task :CordovaLib:extractDeepLinksDebug
+> Task :app:mergeDebugResources
+> Task :CordovaLib:processDebugManifest
+> Task :CordovaLib:compileDebugLibraryResources
+> Task :app:processDebugMainManifest
+> Task :app:processDebugManifest
+> Task :app:processDebugManifestForPackage
+> Task :CordovaLib:parseDebugLocalResources
+> Task :CordovaLib:javaPreCompileDebug
+> Task :app:mergeDebugShaders
+> Task :app:compileDebugShaders NO-SOURCE
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :CordovaLib:mergeDebugShaders
+> Task :CordovaLib:compileDebugShaders NO-SOURCE
+> Task :CordovaLib:generateDebugAssets UP-TO-DATE
+> Task :CordovaLib:packageDebugAssets
+> Task :CordovaLib:generateDebugRFile
+> Task :app:mergeDebugAssets
+> Task :app:processDebugResources
+
+> Task :CordovaLib:compileDebugJavaWithJavac
+
+> Task :app:compressDebugAssets
+> Task :app:processDebugJavaRes NO-SOURCE
+> Task :CordovaLib:processDebugJavaRes
+> Task :CordovaLib:bundleLibCompileToJarDebug
+> Task :app:mergeDebugJavaResource
+
+> Task :app:compileDebugJavaWithJavac
+
+> Task :app:checkDebugDuplicateClasses
+> Task :app:desugarDebugFileDependencies
+> Task :app:mergeExtDexDebug
+> Task :CordovaLib:bundleLibRuntimeToDirDebug
+> Task :app:dexBuilderDebug
+> Task :app:mergeProjectDexDebug
+> Task :app:mergeDebugJniLibFolders
+> Task :CordovaLib:mergeDebugJniLibFolders
+> Task :CordovaLib:mergeDebugNativeLibs NO-SOURCE
+> Task :CordovaLib:copyDebugJniLibsProjectOnly
+> Task :app:mergeDebugNativeLibs NO-SOURCE
+> Task :app:stripDebugDebugSymbols NO-SOURCE
+> Task :app:validateSigningDebug
+> Task :app:writeDebugAppMetadata
+> Task :app:writeDebugSigningConfigVersions
+> Task :app:mergeLibDexDebug
+> Task :app:packageDebug
+> Task :app:createDebugApkListingFileRedirect
+> Task :app:assembleDebug
+> Task :app:cdvBuildDebug
+
+BUILD SUCCESSFUL in 10s
+50 actionable tasks: 50 executed
+Built the following apk(s): 
+	/workspaces/Manasa/MyApp/platforms/android/app/build/outputs/apk/debug/app-debug.apk
+
+2025-03-13 01:38:36,624 - ERROR - أخطاء بناء التطبيق: warning: [options] source value 8 is obsolete and will be removed in a future release
+warning: [options] target value 8 is obsolete and will be removed in a future release
+warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+3 warnings
+warning: [options] source value 8 is obsolete and will be removed in a future release
+warning: [options] target value 8 is obsolete and will be removed in a future release
+warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.
+3 warnings
+
+2025-03-13 01:38:36,750 - INFO - تم بناء التطبيق بنجاح - ID: 17
+2025-03-13 01:38:36,750 - INFO - 127.0.0.1 - - [13/Mar/2025 01:38:36] "GET /build_app/17 HTTP/1.1" 200 -
+2025-03-13 01:40:31,907 - INFO - 127.0.0.1 - - [13/Mar/2025 01:40:31] "GET / HTTP/1.1" 200 -
+2025-03-13 01:40:43,815 - INFO - 127.0.0.1 - - [13/Mar/2025 01:40:43] "[36mGET /static/activity.html HTTP/1.1[0m" 304 -
+2025-03-13 01:40:46,376 - INFO - 127.0.0.1 - - [13/Mar/2025 01:40:46] "[36mGET /static/design.html HTTP/1.1[0m" 304 -
+2025-03-13 01:40:59,190 - INFO - تم حفظ بيانات التطبيق بنجاح - ID: 18
+2025-03-13 01:40:59,190 - INFO - 127.0.0.1 - - [13/Mar/2025 01:40:59] "POST /save_app_data HTTP/1.1" 200 -
+2025-03-13 01:41:01,521 - INFO - تم تعديل config.xml بنجاح: id=com.test.app, name=ahmed
+2025-03-13 01:41:03,352 - INFO - مخرجات إزالة المنصة: Removing android from cordova.platforms array in package.json
+
+2025-03-13 01:41:04,222 - INFO - المنصات الموجودة بعد الإزالة: Installed platforms:
+  
+Available platforms:
+  android
+  browser
+  electron
+
+2025-03-13 01:41:07,547 - INFO - مخرجات إضافة المنصة: Using cordova-fetch for cordova-android
+Adding android project...
+Creating Cordova project for the Android platform:
+	Path: platforms/android
+	Package: com.test.app
+	Name: ahmed
+	Activity: MainActivity
+	Android Target SDK: android-34
+	Android Compile SDK: 34
+Subproject Path: CordovaLib
+Subproject Path: app
+Android project created with cordova-android@13.0.0
+
+2025-03-13 01:41:07,547 - INFO - تم نسخ الأيقونة /workspaces/Manasa/icons/icon1.png إلى /workspaces/Manasa/MyApp/resources/android/icon.png
+2025-03-13 01:41:19,432 - INFO - مخرجات بناء التطبيق: Checking Java JDK and Android SDK versions
+ANDROID_HOME=/workspaces/Manasa/AndroidSdk (recommended setting)
+ANDROID_SDK_ROOT=undefined (DEPRECATED)
+Using Android SDK: /workspaces/Manasa/AndroidSdk
+> Task :wrapper
+
+BUILD SUCCESSFUL in 2s
+1 actionable task: 1 executed
+Subproject Path: CordovaLib
+Subproject Path: app
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :app:generateDebugBuildConfig
+> Task :CordovaLib:preBuild UP-TO-DATE
+> Task :CordovaLib:preDebugBuild UP-TO-DATE
+> Task :app:javaPreCompileDebug
+> Task :CordovaLib:writeDebugAarMetadata
+> Task :app:generateDebugResValues
+> Task :app:checkDebugAarMetadata
+> Task :CordovaLib:generateDebugResValues
+> Task :CordovaLib:generateDebugResources
+> Task :CordovaLib:packageDebugResources
+> Task :app:mapDebugSourceSetPaths
+> Task :app:generateDebugResources
+> Task :app:packageDebugResources
+> Task :app:parseDebugLocalResources
+> Task :app:createDebugCompatibleScreenManifests
+> Task :app:extractDeepLinksDebug
+> Task :CordovaLib:extractDeepLinksDebug
+> Task :CordovaLib:processDebugManifest
+> Task :app:processDebugMainManifest
+> Task :app:processDebugManifest
+> Task :app:processDebugManifestForPackage
+> Task :app:mergeDebugResources
+> Task :CordovaLib:compileDebugLibraryResources
+> Task :CordovaLib:javaPreCompileDebug
+> Task :CordovaLib:parseDebugLocalResources
+> Task :app:mergeDebugShaders
+> Task :app:compileDebugShaders NO-SOURCE
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :CordovaLib:mergeDebugShaders
+> Task :CordovaLib:compileDebugShaders NO-SOURCE
+> Task :CordovaLib:generateDebugAssets UP-TO-DATE
+> Task :CordovaLib:generateDebugRFile
+> Task :CordovaLib:packageDebugAssets
+> Task :app:processDebugResources
+
+> Task :CordovaLib:compileDebugJavaWithJavac
+
+> Task :CordovaLib:bundleLibCompileToJarDebug
+> Task :app:mergeDebugAssets
+
+> Task :app:compileDebugJavaWithJavac
+
+> Task :app:processDebugJavaRes NO-SOURCE
+> Task :app:compressDebugAssets
+> Task :CordovaLib:processDebugJavaRes
+> Task :app:checkDebugDuplicateClasses
+> Task :app:desugarDebugFileDependencies
+> Task :app:mergeDebugJavaResource
+> Task :app:mergeExtDexDebug
+> Task :CordovaLib:bundleLibRuntimeToDirDebug
+> Task :app:dexBuilderDebug
+> Task :app:mergeProjectDexDebug
+> Task :app:mergeDebugJniLibFolders
+> Task :CordovaLib:mergeDebugJniLibFolders
+> Task :CordovaLib:mergeDebugNativeLibs NO-SOURCE
+> Task :CordovaLib:copyDebugJniLibsProjectOnly
+> Task :app:mergeDebugNativeLibs NO-SOURCE
+> Task :app:stripDebugDebugSymbols NO-SOURCE
+> Task :app:validateSigningDebug
+> Task :app:writeDebugAppMetadata
+> Task :app:writeDebugSigningConfigVersions
+> Task :app:mergeLibDexDebug
+> Task :app:packageDebug
+> Task :app:createDebugApkListingFileRedirect
+> Task :app:assembleDebug
+> Task :app:cdvBuildDebug
+
+BUILD SUCCESSFUL in 7s
+50 actionable tasks: 50 executed
+Built the following apk(s): 
+	/workspaces/Manasa/MyApp/platforms/android/app/build/outputs/apk/debug/app-debug.apk
+
+2025-03-13 01:41:19,432 - ERROR - أخطاء بناء التطبيق: warning: [options] source value 8 is obsolete and will be removed in a future release
+warning: [options] target value 8 is obsolete and will be removed in a future release
+warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+3 warnings
+warning: [options] source value 8 is obsolete and will be removed in a future release
+warning: [options] target value 8 is obsolete and will be removed in a future release
+warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.
+3 warnings
+
+2025-03-13 01:41:19,471 - INFO - تم بناء التطبيق بنجاح - ID: 18
+2025-03-13 01:41:19,472 - INFO - 127.0.0.1 - - [13/Mar/2025 01:41:19] "GET /build_app/18 HTTP/1.1" 200 -

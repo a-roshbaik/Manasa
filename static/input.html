@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدخال بيانات التطبيق</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Cairo', sans-serif;
+        }
+        .container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            margin: 20px;
+        }
+        h1 {
+            font-size: 1.8rem;
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-label {
+            font-weight: bold;
+            color: #555;
+        }
+        .form-control, .form-select {
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 15px;
+            transition: border-color 0.3s ease;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+        .btn-primary {
+            width: 100%;
+            padding: 12px;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            background-color: #007bff;
+            border: none;
+            transition: background-color 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        .error-message {
+            color: #dc3545;
+            font-size: 0.9rem;
+            display: none;
+            margin-top: -10px;
+            margin-bottom: 15px;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>إدخال بيانات التطبيق</h1>
+        <form id="appForm" novalidate>
+            <div class="mb-3">
+                <label for="appName" class="form-label">اسم التطبيق:</label>
+                <input type="text" class="form-control" id="appName" name="appName" placeholder="أدخل اسم التطبيق" required>
+                <div id="appNameError" class="error-message">يرجى إدخال اسم تطبيق صالح</div>
+            </div>
+            <div class="mb-3">
+                <label for="packageName" class="form-label">اسم الحزمة:</label>
+                <input type="text" class="form-control" id="packageName" name="packageName" placeholder="مثال: com.example.app" required>
+                <div id="packageNameError" class="error-message">يرجى إدخال اسم حزمة صالح (مثال: com.example.app)</div>
+            </div>
+            <div class="mb-3">
+                <label for="icon" class="form-label">اختر أيقونة:</label>
+                <select class="form-select" id="icon" name="icon">
+                    <option value="icon1">أيقونة 1 - تصميم حديث</option>
+                    <option value="icon2">أيقونة 2 - تصميم كلاسيكي</option>
+                    <option value="icon3">أيقونة 3 - تصميم بسيط</option>
+                </select>
+            </div>
+            <button type="button" class="btn btn-primary" onclick="saveDataAndNext()">التالي</button>
+        </form>
+    </div>
+    <script>
+        function validateInput() {
+            const appName = document.getElementById('appName').value.trim();
+            const packageName = document.getElementById('packageName').value.trim();
+            const appNameError = document.getElementById('appNameError');
+            const packageNameError = document.getElementById('packageNameError');
+            let isValid = true;
+
+            // التحقق من اسم التطبيق
+            if (!appName) {
+                appNameError.style.display = 'block';
+                isValid = false;
+            } else {
+                appNameError.style.display = 'none';
+            }
+
+            // التحقق من اسم الحزمة باستخدام تعبير منتظم
+            const packageNameRegex = /^[a-zA-Z0-9][a-zA-Z0-9\.]*[a-zA-Z0-9]$/;
+            if (!packageName || !packageNameRegex.test(packageName) || packageName.split('.').length < 2) {
+                packageNameError.style.display = 'block';
+                isValid = false;
+            } else {
+                packageNameError.style.display = 'none';
+            }
+
+            return isValid;
+        }
+
+        function saveDataAndNext() {
+            if (validateInput()) {
+                localStorage.setItem('appName', document.getElementById('appName').value.trim());
+                localStorage.setItem('packageName', document.getElementById('packageName').value.trim());
+                localStorage.setItem('icon', document.getElementById('icon').value);
+                window.location.href = '/static/activity.html';
+            }
+        }
+    </script>
+</body>
+</html>

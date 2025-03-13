@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تصميم التطبيق</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            font-family: 'Cairo', sans-serif;
+            padding: 20px;
+        }
+        .container {
+            background: #fff;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        h1 {
+            font-size: 2rem;
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        #sidebar {
+            width: 250px;
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            float: right;
+        }
+        #sidebar h2 {
+            font-size: 1.2rem;
+            color: #555;
+            margin-bottom: 15px;
+        }
+        .draggable {
+            padding: 12px;
+            background-color: #e9ecef;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: move;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+            text-align: center;
+        }
+        .draggable:hover {
+            transform: scale(1.05);
+            background-color: #dee2e6;
+        }
+        #phoneScreen {
+            width: 320px;
+            height: 600px;
+            border: 3px solid #333;
+            border-radius: 20px;
+            background-color: #fff;
+            margin: 0 auto;
+            position: relative;
+            overflow-y: auto;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+        }
+        #phoneScreen::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            width: 60px;
+            height: 5px;
+            background-color: #ccc;
+            border-radius: 5px;
+            transform: translateX(-50%);
+        }
+        .dropped-item {
+            padding: 10px;
+            margin: 10px;
+            border: 1px dashed #007bff;
+            border-radius: 5px;
+            background-color: #f1f8ff;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .dropped-item iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+        #phoneScreen.fullscreen-webview .dropped-item {
+            flex: 1;
+            margin: 0;
+            padding: 0;
+            border: none;
+            background: none;
+        }
+        .btn {
+            padding: 12px 20px;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+            margin: 10px 5px;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border: none;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        .btn-success {
+            background-color: #28a745;
+            border: none;
+        }
+        .btn-success:hover {
+            background-color: #218838;
+        }
+        .btn-warning {
+            background-color: #ffc107;
+            border: none;
+        }
+        .btn-warning:hover {
+            background-color: #e0a800;
+        }
+        #loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+        #progressBar {
+            height: 20px;
+            border-radius: 10px;
+        }
+        #qrCodeContainer {
+            margin-top: 20px;
+            text-align: center;
+            display: none;
+        }
+        #qrCodeContainer p {
+            font-size: 1rem;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        #qrCode {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto;
+        }
+        .webview-options {
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>تصميم تطبيقك</h1>
+        <div class="row">
+            <div class="col-md-4">
+                <div id="sidebar">
+                    <h2>العناصر المتاحة</h2>
+                    <div class="draggable" draggable="true" ondragstart="drag(event)" id="text">نص</div>
+                    <div class="draggable" draggable="true" ondragstart="drag(event)" id="webview">WebView</div>
+                    <div class="webview-options">
+                        <label>نوع الـ WebView:</label>
+                        <select id="webviewType">
+                            <option value="url">رابط موقع</option>
+                            <option value="html">كود HTML</option>
+                        </select>
+                        <input type="text" id="webviewInput" class="form-control mt-2" placeholder="أدخل الرابط أو الكود هنا">
+                    </div>
+                    <div id="qrCodeContainer">
+                        <p>امسح لتحميل التطبيق</p>
+                        <div id="qrCode"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8 d-flex justify-content-center">
+                <div id="phoneScreen" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+            </div>
+        </div>
+        <div class="text-center">
+            <button class="btn btn-primary" onclick="saveAppData()">حفظ التصميم</button>
+            <button id="buildButton" class="btn btn-success" onclick="buildApp()">بناء التطبيق</button>
+            <button class="btn btn-warning" onclick="resetApp()">تطبيق جديد</button>
+            <div id="loading">
+                <p>جاري بناء التطبيق...</p>
+                <div class="progress">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-info" id="progressBar" role="progressbar" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        let currentAppId = null;
+
+        function allowDrop(ev) { 
+            ev.preventDefault(); 
+        }
+
+        function drag(ev) { 
+            ev.dataTransfer.setData("text", ev.target.id); 
+        }
+
+        function drop(ev) {
+            ev.preventDefault();
+            var data = ev.dataTransfer.getData("text");
+            var nodeCopy = document.createElement('div');
+            nodeCopy.className = 'dropped-item';
+            nodeCopy.id = data + "_" + new Date().getTime();
+
+            if (data === 'text') {
+                nodeCopy.innerHTML = '<p>نص تجريبي</p>';
+            } else if (data === 'webview') {
+                const webviewType = document.getElementById('webviewType').value;
+                const webviewInput = document.getElementById('webviewInput').value.trim();
+                
+                if (!webviewInput) {
+                    alert('يرجى إدخال رابط أو كود HTML لـ WebView');
+                    return;
+                }
+
+                nodeCopy.dataset.type = webviewType;
+                nodeCopy.dataset.content = webviewInput;
+
+                if (webviewType === 'url') {
+                    nodeCopy.innerHTML = `<iframe src="${webviewInput}" width="100%" height="100%" style="border:none;"></iframe>`;
+                } else if (webviewType === 'html') {
+                    nodeCopy.innerHTML = webviewInput;
+                }
+
+                var phoneScreen = document.getElementById('phoneScreen');
+                if (phoneScreen.children.length === 0) {
+                    phoneScreen.classList.add('fullscreen-webview');
+                }
+            }
+            ev.target.appendChild(nodeCopy);
+        }
+
+        function showLoading() { 
+            document.getElementById('loading').style.display = 'block'; 
+            document.getElementById('buildButton').disabled = true;
+        }
+
+        function hideLoading() { 
+            document.getElementById('loading').style.display = 'none'; 
+            document.getElementById('buildButton').disabled = false;
+        }
+
+        function showQRCode(appId) {
+            const qrCodeContainer = document.getElementById('qrCodeContainer');
+            const qrCodeDiv = document.getElementById('qrCode');
+            qrCodeContainer.style.display = 'block';
+            qrCodeDiv.innerHTML = '';
+
+            const canvas = document.createElement('canvas');
+            qrCodeDiv.appendChild(canvas);
+
+            const downloadUrl = `${window.location.origin}/apks/${appId}.apk`;
+            console.log('رابط التحميل:', downloadUrl);
+
+            if (typeof QRCode === 'undefined') {
+                console.error('مكتبة QRCode غير محملة');
+                qrCodeDiv.innerHTML = '<p>خطأ: فشل تحميل مكتبة QR</p>';
+                return;
+            }
+
+            QRCode.toCanvas(canvas, downloadUrl, { width: 150 }, function (error) {
+                if (error) {
+                    console.error('خطأ أثناء إنشاء رمز QR:', error);
+                    qrCodeDiv.innerHTML = '<p>خطأ: فشل إنشاء رمز QR</p>';
+                } else {
+                    console.log('تم إنشاء رمز QR بنجاح');
+                }
+            });
+        }
+
+        function resetApp() {
+            // مسح بيانات localStorage
+            localStorage.clear();
+
+            // إعادة توجيه المستخدم إلى صفحة الإدخال
+            window.location.href = '/'; // يعيد التوجيه إلى input.html عبر المسار الرئيسي
+        }
+
+        async function saveAppData() {
+            showLoading();
+            try {
+                var elements = [];
+                var phoneScreen = document.getElementById('phoneScreen');
+                Array.from(phoneScreen.children).forEach(child => {
+                    if (child.id.startsWith('text_')) {
+                        elements.push('text');
+                    } else if (child.id.startsWith('webview_')) {
+                        elements.push({
+                            type: 'webview',
+                            webviewType: child.dataset.type,
+                            content: child.dataset.content
+                        });
+                    }
+                });
+
+                const response = await fetch('/save_app_data', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        appName: localStorage.getItem('appName'),
+                        packageName: localStorage.getItem('packageName'),
+                        icon: localStorage.getItem('icon'),
+                        activityType: localStorage.getItem('activityType'),
+                        elements: elements
+                    })
+                });
+
+                const data = await response.json();
+                hideLoading();
+
+                if (data.status === 'success') {
+                    currentAppId = data.app_id;
+                    alert('تم حفظ التصميم بنجاح! ID: ' + currentAppId);
+                    document.getElementById('buildButton').style.display = 'inline-block';
+                    document.getElementById('buildButton').disabled = false;
+                } else {
+                    alert('خطأ: ' + data.message);
+                }
+            } catch (error) {
+                hideLoading();
+                alert('خطأ: ' + error);
+            }
+        }
+
+        async function buildApp() {
+            if (!currentAppId) {
+                alert('يرجى حفظ التصميم أولاً!');
+                return;
+            }
+
+            showLoading();
+            try {
+                const response = await fetch(`/build_app/${currentAppId}`, {
+                    method: 'GET'
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'فشل بناء التطبيق');
+                }
+
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                const appName = localStorage.getItem('appName') || 'app';
+                const cleanAppName = appName.replace(/[^a-zA-Z0-9-_]/g, '');
+                a.download = `${cleanAppName}_${currentAppId}.apk`;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                window.URL.revokeObjectURL(url);
+
+                hideLoading();
+                alert('تم بناء التطبيق بنجاح وتم تنزيله!');
+                showQRCode(currentAppId);
+            } catch (error) {
+                hideLoading();
+                alert('خطأ أثناء بناء التطبيق: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>
